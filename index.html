@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nike Store</title>
+  <link rel="stylesheet" href="file.css">
+  <link rel="stylesheet" href="file.override.css">
+</head>
+<body> 
+  <header>
+    <source src="videos/nike-promo.mp4" type="video/mp4">
+    <div class="logo">NIKE</div>
+    <nav>
+      <a href="#shoes">Shoes</a>
+      <a href="#shirts">Shirts</a>
+      <a href="#trousers">Trousers</a>
+      <a href="#cart">Cart</a>
+      <a href="orders.html">Orders</a>
+      <a href="wishlist.html">Wishlist</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </header>
+  <section class="hero">
+    <div class="hero-copy">
+      <h1>Just Do It</h1>
+      <p>Shop the latest Nike essentials for training, running, and everyday wear.</p>
+      <button onclick="document.getElementById('shoes').scrollIntoView({behavior:'smooth'})">
+        Start Shopping
+      </button>
+    </div>
+  </section>
+
+<section class="hero-video">
+  <video autoplay muted loop playsinline id="nikeHeroVideo">
+    <source src="videos/nike-promo.mp4" type="video/mp4">
+  </video>
+</section>
+
+  <main>
+    <section id="search" class="search-section">
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;align-items:center;">
+        <input type="text" id="search-bar" placeholder="Search products by name" aria-label="Search products by name">
+        <select id="category-filter">
+          <option value="all">All categories</option>
+        </select>
+        <select id="sort-select">
+          <option value="default">Sort</option>
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+          <option value="name-asc">Name A→Z</option>
+          <option value="name-desc">Name Z→A</option>
+        </select>
+        <input type="range" id="price-filter" min="0" max="2000" value="2000" style="width:150px;" title="Max price">
+        <span id="price-display">Max: $2000</span>
+        <label style="display:inline-flex;align-items:center;gap:.4rem;margin-left:.4rem;">
+          <input type="checkbox" id="sale-only"> <span>Sale only</span>
+        </label>
+      </div>
+    </section>
+
+    <section id="trending" class="products">
+      <h2>🔥 Trending Now</h2>
+      <div class="product-grid" id="trending-list"></div>
+    </section>
+
+    <section class="marketplace-panel">
+      <div class="marketplace-header">
+        <div>
+          <h2> N I K E </h2>
+          <p id="product-count">Loading 1000+ products...</p>
+        </div>
+        <div id="category-buttons" class="category-buttons"></div>
+      </div>
+      <div class="deal-banner">
+        <div class="deal-card">
+          <div>
+            <span class="badge primary">Flash Sale</span>
+            <h3>Up to 50% off on select shoes</h3>
+            <p>Exclusive Daraz-style offers with mega discounts across running, training and lifestyle sneakers.</p>
+          </div>
+          <a href="#all-products" class="primary-btn">Shop the bazaar</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="featured" class="products">
+      <h2>Hot Deals</h2>
+      <div class="product-grid" id="top-deal-list"></div>
+    </section>
+
+    <section id="all-products" class="products">
+      <div class="section-heading-row">
+        <div>
+          <h2>All Products</h2>
+          <p>Browse thousands of Nike items and discover trending deals.</p>
+        </div>
+        <button id="load-more-btn" class="primary-btn">Load More Products</button>
+      </div>
+      <div class="product-grid" id="all-list"></div>
+    </section>
+
+    <section id="cart" class="cart-section">
+      <h2>Your Cart</h2>
+      <div id="cart-items" class="cart-items"></div>
+      <p id="cart-total">Total: $0</p>
+
+      <div class="checkout-card">
+        <h3>Checkout</h3>
+        <form id="checkout-form">
+          <label for="name">Name</label>
+          <input type="text" id="name" required>
+
+          <label for="address">Address</label>
+          <input type="text" id="address" required>
+
+          <label for="email">Email</label>
+          <input type="email" id="email" required>
+
+          <button type="submit">Place Order</button>
+        </form>
+        <p id="order-message"></p>
+      </div>
+    </section>
+  </main>
+
+  <section class="trust-section">
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="trust-icon">🚚</div>
+        <h4>Free Shipping</h4>
+        <p>On orders over $50. Fast delivery to your doorstep.</p>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🔄</div>
+        <h4>Easy Returns</h4>
+        <p>30-day return policy. No questions asked.</p>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🛡️</div>
+        <h4>Secure Checkout</h4>
+        <p>Your payment is 100% secure and encrypted.</p>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">⭐</div>
+        <h4>Trusted Brand</h4>
+        <p>Official Nike Store. Authentic products guaranteed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="newsletter-section">
+    <h3>Join Our Newsletter</h3>
+    <p>Get exclusive deals, early access to new arrivals, and style tips.</p>
+    <form id="newsletter-form" style="display:flex;gap:0.5rem;max-width:500px;margin:1rem auto;">
+      <input type="email" id="newsletter-email" placeholder="Enter your email" required style="flex:1;padding:0.85rem;border-radius:8px;border:1px solid var(--border);">
+      <button type="submit" class="primary-btn" style="white-space:nowrap;">Subscribe</button>
+    </form>
+    <p id="newsletter-status" style="margin-top:0.5rem;font-size:0.9rem;"></p>
+  </section>
+
+  <section class="reviews-section">
+    <h2>What Our Customers Say</h2>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">"Amazing quality and fast shipping! The shoes are incredibly comfortable."</p>
+        <p class="review-author">— Sarah M.</p>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">"Great prices and excellent customer service. Highly recommend!"</p>
+        <p class="review-author">— John D.</p>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">"Perfect fit and style. This is my go-to store for Nike products."</p>
+        <p class="review-author">— Emma L.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-col">
+        <h5>About Nike Store</h5>
+        <p>Your ultimate destination for premium Nike products and exclusive deals.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <a href="#all-products">Shop All</a>
+        <a href="admin.html">Admin</a>
+        <a href="orders.html">Orders</a>
+        <a href="wishlist.html">Wishlist</a>
+      </div>
+      <div class="footer-col">
+        <h5>Support</h5>
+        <a href="#">Contact Us</a>
+        <a href="#">FAQ</a>
+        <a href="#">Shipping Info</a>
+        <a href="#">Returns</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Nike Store. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a></p>
+    </div>
+  </footer>
+
+  <!-- Product detail modal -->
+  <div id="product-modal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">×</button>
+      <img id="modal-img" src="" alt="" />
+      <div class="modal-info">
+        <h3 id="modal-title"></h3>
+        <p id="modal-price"></p>
+        <p id="modal-desc">High-quality Nike product.</p>
+        <div class="modal-actions">
+          <label>Quantity</label>
+          <div class="qty-control">
+            <button id="modal-dec" class="qty-btn">-</button>
+            <input id="modal-qty" type="number" min="1" value="1">
+            <button id="modal-inc" class="qty-btn">+</button>
+          </div>
+          <button id="modal-add" class="primary-btn">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="first.js" defer></script>
+</body>
+</html>
