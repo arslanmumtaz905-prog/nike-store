@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Order Confirmation</title>
+  <link rel="stylesheet" href="file.css">
+  <link rel="stylesheet" href="file.override.css">
+</head>
+<body>
+  <header>
+    <div class="logo">NIKE</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="orders.html">Orders</a>
+      <a href="wishlist.html">Wishlist</a>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="success-card">
+      <h1>Order Confirmed</h1>
+      <p id="success-text">Thanks for your order. We are preparing it now.</p>
+      <div class="order-summary" id="order-summary"></div>
+      <a href="index.html" class="primary-btn">Continue Shopping</a>
+    </section>
+  </main>
+
+  <script>
+  const data = sessionStorage.getItem('orderSuccess');
+  if (!data) {
+    document.getElementById('success-text').textContent = 'No order data was found. Please return to shopping.';
+  } else {
+    const order = JSON.parse(data);
+    document.getElementById('success-text').textContent = `Thanks ${order.name}! Your order #${order.id} is confirmed.`;
+    const panel = document.getElementById('order-summary');
+    panel.innerHTML = `
+      <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+      <p><strong>Items:</strong> ${order.items.length}</p>
+      <p><strong>Delivery:</strong> ${order.address}</p>
+      <p><strong>Email:</strong> ${order.email}</p>
+      <p><a href="order-detail.html?id=${encodeURIComponent(order.id)}" class="primary-btn" style="display:inline-block;margin-top:1rem;">View Order Details</a></p>
+    `;
+    sessionStorage.removeItem('orderSuccess');
+  }
+  </script>
+</body>
+</html>

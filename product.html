@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Product Details</title>
+  <link rel="stylesheet" href="file.css">
+  <link rel="stylesheet" href="file.override.css">
+</head>
+<body>
+  <header>
+    <div class="logo">NIKE</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="wishlist.html">Wishlist</a>
+    </nav>
+  </header>
+
+  <main class="products" id="product-root">
+    <div id="product-detail" class="product-detail"></div>
+  </main>
+
+  <script>
+  async function loadProduct() {
+    const qp = new URLSearchParams(location.search);
+    const id = qp.get('id');
+    const res = await fetch('/products');
+    const products = await res.json();
+    const p = products.find(x => String(x.id) === String(id));
+    const root = document.getElementById('product-detail');
+    if (!p) { root.innerHTML = '<p>Product not found.</p>'; return; }
+
+    root.innerHTML = `
+      <div class="product-detail-card">
+        <div class="detail-image">
+          <img src="${p.img}" alt="${p.name}" />
+        </div>
+        <div class="detail-info">
+          <span class="badge">${p.category.toUpperCase()}</span>
+          <h1>${p.name}</h1>
+          <p class="price">$${p.price}</p>
+          <p class="description">${p.description || 'A premium Nike product designed for performance, comfort, and everyday style.'}</p>
+          <div class="detail-form">
+            <div>
+              <label>Size</label>
+              <select id="size-select">
+                <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
+              </select>
+            </div>
+            <div>
+              <label>Quantity</label>
+              <input id="qty" type="number" value="1" min="1" />
+            </div>
+          </div>
+          <div class="product-actions">
+            <button id="add-cart" class="primary-btn">Add to Cart</button>
+            <button id="add-wish" class="wish-btn">♡</button>
+          </div>
+          <p id="msg" class="detail-msg"></p>
+        </div>
+      </div>
+    `;
+
+    const wishButton = document.getElementById('add-wish');
+    const wishSet = new Set(JSON.parse(localStorage.getItem('wishlist')||'[]'));
+    if (wishSet.has(String(p.id))) wishButton.innerText = '♥';
+
+    document.getElementById('add-cart').addEventListener('click', ()=>{
+      const q = Number(document.getElementById('qty').value||1);
+      const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+      const idv = String(p.id);
+      const existing = cart.find(i=>String(i.id)===idv);
+      if (existing) existing.quantity = (existing.quantity||1)+q; else cart.push({ id: idv, name: p.name, price: p.price, img: p.img, quantity: q });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      document.getElementById('msg').textContent = 'Added to cart.';
+    });
+
+    wishButton.addEventListener('click', ()=>{
+      const wish = new Set(JSON.parse(localStorage.getItem('wishlist')||'[]'));
+      const sid = String(p.id);
+      if (wish.has(sid)) { wish.delete(sid); wishButton.innerText='♡'; }
+      else { wish.add(sid); wishButton.innerText='♥'; }
+      localStorage.setItem('wishlist', JSON.stringify(Array.from(wish)));
+    });
+  }
+  loadProduct();
+  </script>
+</body>
+</html>

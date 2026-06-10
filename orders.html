@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Order History</title>
+  <link rel="stylesheet" href="file.css">
+  <link rel="stylesheet" href="file.override.css">
+</head>
+<body>
+  <header>
+    <div class="logo">NIKE</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="wishlist.html">Wishlist</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="success-card">
+      <h1>Order History</h1>
+      <div id="orders-list"></div>
+      <div id="orders-empty" class="empty-state" style="display:none;">
+        <h3>No orders yet</h3>
+        <p>Your completed orders will appear here once you place them.</p>
+        <a href="index.html" class="primary-btn">Shop now</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  async function loadOrders() {
+    const res = await fetch('/api/orders');
+    const data = await res.json();
+    const list = document.getElementById('orders-list');
+    const empty = document.getElementById('orders-empty');
+    if (!Array.isArray(data) || data.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    list.innerHTML = data.reverse().map(order => `
+      <div class="admin-product" style="padding:1rem; background:#f7f8fb; border-radius:18px; margin-bottom:1rem; grid-template-columns:1fr auto;">
+        <div>
+          <strong>Order #${order.id}</strong>
+          <p>${order.name} • ${order.email}</p>
+          <p>${order.items.length} items • $${order.total.toFixed(2)}</p>
+          <p>${new Date(order.savedAt || order.date).toLocaleString()}</p>
+        </div>
+        <div style="text-align:right;">
+          <a href="order-detail.html?id=${encodeURIComponent(order.id)}" class="primary-btn" style="padding:.6rem 1rem;">View</a>
+        </div>
+      </div>
+    `).join('');
+  }
+  loadOrders();
+  </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin - Add Product</title>
+  <link rel="stylesheet" href="file.css">
+  <link rel="stylesheet" href="file.override.css">
+</head>
+<body>
+  <header>
+    <div class="logo">NIKE - Admin</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="orders.html">Orders</a>
+      <a href="wishlist.html">Wishlist</a>
+    </nav>
+  </header>
+
+  <main class="admin-shell">
+    <section class="admin-panel">
+      <div>
+        <h2>Add Product</h2>
+        <form id="admin-form" class="admin-form">
+          <label>Name</label>
+          <input id="name" required />
+          <label>Price</label>
+          <input id="price" type="number" required />
+          <label>Image URL</label>
+          <input id="img" placeholder="Optional" />
+          <label>Category</label>
+          <input id="category" placeholder="shoes, shirts, trousers" />
+          <button type="submit" class="primary-btn">Create Product</button>
+        </form>
+        <p id="admin-msg" class="status-text"></p>
+        <div style="display:flex;gap:.6rem;margin-top:.6rem;">
+          <button id="gen-catalog" class="primary-btn" type="button">Generate Catalog</button>
+          <button id="export-products" class="primary-btn" type="button">Export Products</button>
+        </div>
+      </div>
+      <aside class="admin-sidebar">
+        <h3>Current Products</h3>
+        <div id="product-list"></div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+  async function refreshProducts() {
+    const res = await fetch('/products');
+    const products = await res.json();
+    const list = document.getElementById('product-list');
+    list.innerHTML = products.map(p => `<div class="admin-product"><strong>${p.name}</strong><span>$${p.price}</span><small>${p.category}</small></div>`).join('');
+  }
+
+  document.getElementById('admin-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const body = { name: document.getElementById('name').value, price: Number(document.getElementById('price').value), img: document.getElementById('img').value, category: document.getElementById('category').value };
+    const res = await fetch('/admin/products', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    document.getElementById('admin-msg').textContent = data.message || 'Done';
+    await refreshProducts();
+    document.getElementById('admin-form').reset();
+  });
+
+  refreshProducts();
+
+  document.getElementById('gen-catalog').addEventListener('click', async () => {
+    const input = prompt('How many products to generate?', '500');
+    const count = Number(input) || 0;
+    if (!count) return;
+    const res = await fetch('/admin/generate', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ count }) });
+    const data = await res.json();
+    document.getElementById('admin-msg').textContent = data.message + ' (added: ' + data.added + ')';
+    await refreshProducts();
+  });
+
+  document.getElementById('export-products').addEventListener('click', () => {
+    window.location.href = '/admin/export';
+  });
+  </script>
+</body>
+</html>

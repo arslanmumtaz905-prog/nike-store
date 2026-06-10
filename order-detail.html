@@ -1,0 +1,423 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Order Detail</title>
+  <link rel="stylesheet" href="file.css">
+  <link rel="stylesheet" href="file.override.css">
+</head>
+<body>
+  <header>
+    <div class="logo">NIKE</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="orders.html">Orders</a>
+      <a href="wishlist.html">Wishlist</a>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="success-card">
+      <h1>Order Detail</h1>
+      <div id="detail-content"></div>
+      <a href="orders.html" class="primary-btn">Back to Orders</a>
+    </section>
+  </main>
+
+  <script>
+  async function loadDetail() {
+    const qp = new URLSearchParams(location.search);
+    const id = qp.get('id');
+    const res = await fetch(`/api/orders/${encodeURIComponent(id)}`);
+    const content = document.getElementById('detail-content');
+    if (!res.ok) {
+      content.innerHTML = '<p>Order not found.</p>';
+      return;
+    }
+    const order = await res.json();
+    content.innerHTML = `
+      <div style="margin-bottom:1.5rem;">
+        <p><strong>Order ID:</strong> ${order.id}</p>
+        <p><strong>Name:</strong> ${order.name}</p>
+        <p><strong>Email:</strong> ${order.email}</p>
+        <p><strong>Address:</strong> ${order.address}</p>
+        <p><strong>Date:</strong> ${new Date(order.savedAt || order.date).toLocaleString()}</p>
+        <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+      </div>
+      <div style="background:#f8fafc;padding:1rem;border-radius:18px;">
+        <h2>Items</h2>
+        <ul style="padding-left:1.2rem;">
+          ${order.items.map(item => `<li>${item.name} x ${item.quantity} — $${item.price}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+  loadDetail();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+</head>
+<body>
+  <h1>Checkout</h1>
+  <form id="checkoutForm">
+    <label>Product Name: <input type="text" id="product" required></label><br><br>
+    <label>Quantity: <input type="number" id="quantity" min="1" required></label><br><br>
+    <label>Price: <input type="number" id="price" min="1" required></label><br><br>
+    <button type="submit">Place Order</button>
+  </form>
+
+  <script>
+    document.getElementById("checkoutForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const product = document.getElementById("product").value;
+      const quantity = parseInt(document.getElementById("quantity").value);
+      const price = parseFloat(document.getElementById("price").value);
+
+      const order = {
+        id: Date.now().toString(),
+        date: new Date().toISOString().split("T")[0],
+        items: [product + " (x" + quantity + ")"],
+        total: "$" + (quantity * price).toFixed(2)
+      };
+
+      // Save to localStorage
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      orders.push(order);
+      localStorage.setItem("orders", JSON.stringify(orders));
+
+      alert("Order placed successfully!");
+      window.location.href = "orders.html"; // Redirect to history page
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order History</title>
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>Order History</h1>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const tableBody = document.querySelector("#orderTable tbody");
+
+    orders.forEach(order => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${order.id}</td>
+        <td>${order.date}</td>
+        <td>${order.items.join(", ")}</td>
+        <td>${order.total}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order History</title>
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #f4f4f4; }
+    button { margin-top: 20px; padding: 10px 15px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Order History</h1>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Clear History Button -->
+  <button id="clearHistory">Clear History</button>
+
+  <script>
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      const tableBody = document.querySelector("#orderTable tbody");
+      tableBody.innerHTML = ""; // clear existing rows
+
+      orders.forEach(order => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${order.id}</td>
+          <td>${order.date}</td>
+          <td>${order.items.join(", ")}</td>
+          <td>${order.total`;
+      tableBody.appendChild(row);
+    });
+  </script>
+</body>
+</html>   
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order History</title>
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #f4f4f4; }
+    button { margin-top: 20px; padding: 10px 15px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Order History</h1>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Clear History Button -->
+  <button id="clearHistory">Clear History</button>
+
+  <script>
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      const tableBody = document.querySelector("#orderTable tbody");
+      tableBody.innerHTML = ""; // clear existing rows
+
+      orders.forEach(order => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${order.id}</td>
+          <td>${order.date}</td>
+          <td>${order.items.join(", ")}</td>
+          <td>${order.total}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Load orders on page load
+    loadOrders();
+
+    // Clear history button
+    document.getElementById("clearHistory").addEventListener("click", () => {
+      localStorage.removeItem("orders");
+      loadOrders(); // refresh table
+      alert("Order history cleared!");
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order History</title>
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #f4f4f4; }
+    button { padding: 6px 10px; cursor: pointer; }
+    .delete-btn { background: red; color: white; border: none; }
+    #clearHistory { margin-top: 20px; background: gray; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <h1>Order History</h1>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Total</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Clear History Button -->
+  <button id="clearHistory">Clear All History</button>
+
+  <script>
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      const tableBody = document.querySelector("#orderTable tbody");
+      tableBody.innerHTML = ""; // clear existing rows
+
+      orders.forEach((order, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${order.id}</td>
+          <td>${order.date}</td>
+          <td>${order.items.join(", ")}</td>
+          <td>${order.total}</td>
+          <td><button class="delete-btn" onclick="deleteOrder(${index})">Delete</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function deleteOrder(index) {
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      orders.splice(index, 1); // remove one order at given index
+      localStorage.setItem("orders", JSON.stringify(orders));
+      loadOrders(); // refresh table
+      alert("Order deleted!");
+    }
+
+    document.getElementById("clearHistory").addEventListener("click", () => {
+      localStorage.removeItem("orders");
+      loadOrders();
+      alert("All order history cleared!");
+    });
+
+    // Load orders on page load
+    loadOrders();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order History</title>
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #f4f4f4; }
+    button { padding: 6px 10px; cursor: pointer; }
+    .delete-btn { background: red; color: white; border: none; }
+    .details-btn { background: blue; color: white; border: none; }
+    #clearHistory { margin-top: 20px; background: gray; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <h1>Order History</h1>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Total</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Clear History Button -->
+  <button id="clearHistory">Clear All History</button>
+
+  <script>
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      const tableBody = document.querySelector("#orderTable tbody");
+      tableBody.innerHTML = ""; // clear existing rows
+
+      orders.forEach((order, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${order.id}</td>
+          <td>${order.date}</td>
+          <td>${order.items.join(", ")}</td>
+          <td>${order.total}</td>
+          <td>
+            <button class="details-btn" onclick="viewDetails(${index})">View Details</button>  
+            <button class="delete-btn" onclick="deleteOrder(${index})">Delete</button>
+          </td>;
+          <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order History</title>
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #f4f4f4; }
+    button { padding: 6px 10px; cursor: pointer; margin: 2px; }
+    .delete-btn { background: red; color: white; border: none; }
+    .details-btn { background: blue; color: white; border: none; }
+    #clearHistory { margin-top: 20px; background: gray; color: white; border: none; }
+
+    /* Modal styles */
+    .modal {
+      display: none; /* hidden by default */
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 400px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .close-btn {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Order History</h1>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Total</th>
+        <th>Actions</th>
